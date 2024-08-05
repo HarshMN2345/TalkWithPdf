@@ -1,0 +1,11 @@
+
+streamlit
+pandas
+langchain-groq
+langchain-text-splitters
+langchain-google-genai
+langchain
+langchain-community
+faiss-cpu
+openpyxl
+pypdf
