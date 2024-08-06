@@ -16,6 +16,9 @@ st.title("PDF Data Question Answering System")
 groq_api = st.text_input("Enter your Groq API key:", type="password")
 google_api = st.text_input("Enter your Google API key:", type="password")
 
+# Number of PDFs to upload
+num_pdfs = st.number_input("Select the number of PDFs to upload:", min_value=1, value=1, step=1)
+
 # File uploader for multiple files
 uploaded_files = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
 
@@ -47,6 +50,12 @@ if groq_api and google_api:
         return vector_store
     
     if uploaded_files:
+        if len(uploaded_files) > num_pdfs:
+            st.warning(f"You selected {num_pdfs} PDF(s) to upload, but uploaded {len(uploaded_files)}. Only the first {num_pdfs} will be processed.")
+            uploaded_files = uploaded_files[:num_pdfs]
+        elif len(uploaded_files) < num_pdfs:
+            st.warning(f"You selected {num_pdfs} PDF(s) to upload, but only uploaded {len(uploaded_files)}.")
+        
         with st.spinner("Processing PDF files and creating embeddings..."):
             vector_store = process_pdf_files(uploaded_files)
         
@@ -67,6 +76,6 @@ if groq_api and google_api:
                 response = retrieval_chain.invoke({"input": user_question})
             st.write("Answer:", response["answer"])
     else:
-        st.info("Please upload PDF files to start.")
+        st.info(f"Please upload {num_pdfs} PDF file(s) to start.")
 else:
     st.warning("Please enter both Groq and Google API keys to proceed.")
